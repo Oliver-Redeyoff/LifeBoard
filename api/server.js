@@ -4,11 +4,14 @@ const app = express(),
       bodyParser = require("body-parser");
       port = 3080;
 const monzoIntereface = require('./monzoInterface');
+var FormData = require('form-data');
+const fetch = require("node-fetch");
+const { rejects } = require('assert');
 
 // monzo auth data
-var clientId = 'oauth2client_0000A0KbBZa0KNVrXacVzG';
-var redirectUrl = 'http://192.168.1.98:3000';
-var clientSecret = 'mnzconf.jz53zo9w6vTQ8b9yGkQys/YPNdVNK6BRiIpOec+8EbkX7dKOvzxfBJJ1VzYJX4FhFsGBJ2yDeo5F4NLPGmuO';
+const clientId = 'oauth2client_0000A0KbBZa0KNVrXacVzG';
+const redirectUrl = 'http://192.168.1.98:3000';
+const clientSecret = 'mnzconf.jz53zo9w6vTQ8b9yGkQys/YPNdVNK6BRiIpOec+8EbkX7dKOvzxfBJJ1VzYJX4FhFsGBJ2yDeo5F4NLPGmuO';
 
 // place holder for the data
 const users = [];
@@ -34,26 +37,54 @@ app.get('/api/getMonzoRedirectLink', (req, res) => {
 
 
 app.post('/api/authenticateMonzo', async (req, res) => {
+
   const authCode = req.body.authCode;
-  console.log('authCode: ' + authCode);
 
   var data = new FormData();
   data.append('grant_type', 'authorization_code')
   data.append('client_id', clientId)
   data.append('client_secret', clientSecret)
   data.append('redirect_uri', redirectUrl)
-  data.append('code', code)
+  data.append('code', authCode)
+
+  var success = false;
 
   var url = "https://api.monzo.com/oauth2/token"
 
-  const response = await fetch(url, {
-      method: 'POST',
-      body: data
+  var success = await new Promise((resolve, reject) => {
+    data.submit(url, function(err, res) {
+
+      if(err) reject(err)
+  
+      console.log('Code response : ' + res.statusCode);
+      console.log('Message response : ' + res.statusMessage);
+  
+      var body = '';
+  
+      res.on('data', function(chunk) {
+        body += chunk;
+      });
+  
+      res.on('end', function() {
+        var bodyJson = JSON.parse(body);
+        console.log(bodyJson);
+        if (bodyJson.access_token) {
+          monzoAccessToken = bodyJson.access_token;
+          resolve('success')
+        } else {
+          reject('No access token in body')
+        }
+      })
+  
     });
+  })
 
-  console.log(response.json);
+  if (requestRes = 'success') {
+    res.json(true);
+  } else {
+    res.json(false);
+  }
 
-  res.json(true);
 })
 
 

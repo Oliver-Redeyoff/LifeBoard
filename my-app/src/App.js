@@ -22,6 +22,7 @@ class App extends Component {
     let params = this.getParams(currentUrl);
 
     if(params.code) {
+      console.log(params.code)
       authenticateMonzo(params.code)
         .then(response => {
           console.log(response);
