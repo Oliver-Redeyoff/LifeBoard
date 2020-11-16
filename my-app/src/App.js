@@ -5,15 +5,59 @@ import { Header } from './components/Header'
 import { Users } from './components/Users'
 import { DisplayBoard } from './components/DisplayBoard'
 import CreateUser from './components/CreateUser'
-import { getAllUsers, createUser } from './services/UserService'
+import { getAllUsers, createUser, checkMonzoAuth, getMonzoRedirectLink, authenticateMonzo } from './services/UserService'
 
 class App extends Component {
 
   state = {
     user: {},
     users: [],
-    numberOfUsers: 0
+    numberOfUsers: 0,
+    isLoading: true,
+    isMonzoAuthenticated: false
   }
+
+  componentDidMount() {
+    let currentUrl = window.location.href
+    let params = this.getParams(currentUrl);
+
+    if(params.code) {
+      authenticateMonzo(params.code)
+        .then(response => {
+          console.log(response);
+          this.setState({isLoading: false});
+        });
+    } else {
+      // check if is authenticated, if not do authentication
+      checkMonzoAuth()
+        .then(response => {
+          this.setState({isLoading: false});
+          console.log('monzo auth : ' + response);
+          this.setState({isMonzoAuthenticated: response});
+        });
+    }
+
+  }
+
+  redirectMonzo = () => {
+    getMonzoRedirectLink()
+      .then(response => {
+        window.open(response);
+      });
+  }
+
+  getParams = (url) => {
+    var params = {};
+    var parser = document.createElement('a');
+    parser.href = url;
+    var query = parser.search.substring(1);
+    var vars = query.split('&');
+    for (var i = 0; i < vars.length; i++) {
+      var pair = vars[i].split('=');
+      params[pair[0]] = decodeURIComponent(pair[1]);
+    }
+    return params;
+  };
 
   createUser = (e) => {
       createUser(this.state.user)
@@ -44,10 +88,12 @@ class App extends Component {
   }
 
   render() {
-    
-    return (
-      <div className="App">
-        <Header></Header>
+    let content;
+    if (this.state.isLoading === false) {
+      if (this.state.isMonzoAuthenticated) {
+        content = 
+        <div>
+
         <div className="container mrgnbtm">
           <div className="row">
             <div className="col-md-8">
@@ -70,6 +116,22 @@ class App extends Component {
         <div className="row mrgnbtm">
           <Users users={this.state.users}></Users>
         </div>
+
+      </div>;
+      } else {
+        content = <button onClick={this.redirectMonzo}>Authenticate with monzo</button>
+      }
+    } else {
+      content = <h1>Loading...</h1>
+    }
+
+    return (
+      <div className="App">
+        
+        <Header></Header>
+
+        {content}
+
       </div>
     );
   }
