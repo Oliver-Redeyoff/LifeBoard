@@ -3,25 +3,26 @@ const path = require('path');
 const app = express(),
       bodyParser = require("body-parser");
       port = 3080;
-const monzoIntereface = require('./monzoInterface');
 var FormData = require('form-data');
 const fetch = require("node-fetch");
-const { rejects } = require('assert');
+global.Headers = fetch.Headers;
 
 // monzo auth data
 const clientId = 'oauth2client_0000A0KbBZa0KNVrXacVzG';
 const redirectUrl = 'http://192.168.1.98:3000';
 const clientSecret = 'mnzconf.jz53zo9w6vTQ8b9yGkQys/YPNdVNK6BRiIpOec+8EbkX7dKOvzxfBJJ1VzYJX4FhFsGBJ2yDeo5F4NLPGmuO';
 
-// place holder for the data
-const users = [];
-var monzoAccessToken = '';
+// monzo access token, should be instantiated as empty 
+var monzoAccessToken = 'eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJlYiI6Ik5XY3RVNmc5aW5PTlorK1EyVEo0IiwianRpIjoiYWNjdG9rXzAwMDBBMWpLcG9sR1ZXQ2FscXNmNnYiLCJ0eXAiOiJhdCIsInYiOiI2In0.RGWOVBJTEtmMFNNXhUP8O6thNzDOYAX7hnyMLiY0gY7QSgW2L9_LR0BCGuGmPnP3LRKm6joU94ZVU4sQzdmjSQ';
+// monzo account id
+var monzoAccountId = '';
 
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../my-app/build')));
 
 
 app.get('/api/monzoIsAuthenticated', (req, res) => {
+  console.log('Checking monzo access token : ' + monzoAccessToken);
   if (monzoAccessToken == '') {
     res.json(false);
   } else {
@@ -47,17 +48,12 @@ app.post('/api/authenticateMonzo', async (req, res) => {
   data.append('redirect_uri', redirectUrl)
   data.append('code', authCode)
 
-  var success = false;
-
   var url = "https://api.monzo.com/oauth2/token"
 
-  var success = await new Promise((resolve, reject) => {
+  var requestRes = await new Promise((resolve, reject) => {
     data.submit(url, function(err, res) {
 
       if(err) reject(err)
-  
-      console.log('Code response : ' + res.statusCode);
-      console.log('Message response : ' + res.statusMessage);
   
       var body = '';
   
@@ -72,21 +68,88 @@ app.post('/api/authenticateMonzo', async (req, res) => {
           monzoAccessToken = bodyJson.access_token;
           resolve('success')
         } else {
-          reject('No access token in body')
+          reject('')
         }
       })
   
     });
   })
 
+  console.log('monzo access token : ' + monzoAccessToken);
+
   if (requestRes = 'success') {
+    console.log('Access token request was successful, monzo access token is : ' + monzoAccessToken);
     res.json(true);
   } else {
+    console.log('Access token request was unsucessful, monzo access token is : ' + monzoAccessToken);
     res.json(false);
   }
 
 })
 
+
+app.get('/api/getMonzoBalance', async (req, res) => {
+
+  // check if account id has already been fetched
+  await getAccountId()
+
+  let url = "https://api.monzo.com/balance";
+
+  const myHeaders = new Headers();
+  console.log('getting balance');
+
+  myHeaders.append('Content-Type', 'application/json');
+  myHeaders.append('Authorization', 'Bearer ' + monzoAccessToken);
+
+  let requestRes = await new Promise((resolve, reject) => {
+    fetch(url + '?account_id=' + monzoAccountId, {
+      method: 'GET',
+      headers: myHeaders
+    })
+    .then(res => res.json())
+    .then(data => {resolve(data)})
+  });
+
+  console.log();
+  console.log('getMonzoBalance result :');
+  console.log(requestRes);
+  console.log();
+
+  res.json(requestRes);
+
+})
+
+
+async function getAccountId() {
+
+  if (monzoAccountId == '') {
+
+    let url = "https://api.monzo.com/accounts";
+    console.log('getting accounts');
+    
+    const myHeaders = new Headers();
+
+    myHeaders.append('Content-Type', 'application/json');
+    myHeaders.append('Authorization', 'Bearer ' + monzoAccessToken);
+    
+    let requestRes = await new Promise((resolve, reject) => {
+      fetch(url, {
+        method: 'GET',
+        headers: myHeaders,
+      })
+      .then(res => res.json())
+      .then(data => {resolve(data)})
+    });
+
+    console.log();
+    console.log('getAccountId result : ');
+    console.log(requestRes);
+    console.log();
+
+    monzoAccountId = requestRes.accounts[0].id;
+  }
+
+} 
 
 
 app.get('/', (req,res) => {
@@ -95,17 +158,4 @@ app.get('/', (req,res) => {
 
 app.listen(port, () => {
     console.log(`Server listening on the port::${port}`);
-});
-
-
-app.get('/api/users', (req, res) => {
-  console.log('api/users called!')
-  res.json(users);
-});
-
-app.post('/api/user', (req, res) => {
-  const user = req.body.user;
-  console.log('Adding user:::::', user);
-  users.push(user);
-  res.json("user added");
 });
