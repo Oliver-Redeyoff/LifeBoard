@@ -27,20 +27,25 @@ class AccountBalance extends Component {
   
   render() {
     
+    var content;
+
     if (!this.state.isLoading) {
-      var content = 
-      <div className="balance-value">
-        <h1>{this.state.balance}</h1>
+      content = 
+      <div class="widget-content">
+        <h1 class="balance-value" style={{marginTop: '25px', fontWeight: '600'}}>£ {this.state.balance}</h1>
       </div>
+
     } else {
-      var content =
-      <h1>Loading...</h1>
+      content =
+      <div class="loader"></div>
     }
 
     return (
-      <div className="widget">
-        <h3 className="widget-label">Balance</h3>
-        {content}
+      <div class="widget-container">
+        <div className="widget bg-green">
+          <h3 className="widget-label">Balance</h3>
+          {content}
+        </div>
       </div>
     );
   }

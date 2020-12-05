@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { Header } from './components/Header'
 import AccountBalance from './components/AccountBalance'
-import { authenticateMonzo } from './services/UserService'
+import { authenticateMonzo } from './services/ApiService'
 
 class App extends Component {
 
@@ -77,7 +77,7 @@ class App extends Component {
         content = <button onClick={this.redirectMonzo}>Authenticate with monzo</button>
       }
     } else {
-      content = <h1>Loading...</h1>
+      content = <div class="loader"></div>
     }
 
     return (

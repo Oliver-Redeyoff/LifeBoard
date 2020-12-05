@@ -13,7 +13,7 @@ const redirectUrl = 'http://192.168.1.98:3000';
 const clientSecret = 'mnzconf.jz53zo9w6vTQ8b9yGkQys/YPNdVNK6BRiIpOec+8EbkX7dKOvzxfBJJ1VzYJX4FhFsGBJ2yDeo5F4NLPGmuO';
 
 // monzo access token, should be instantiated as empty 
-var monzoAccessToken = 'eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJlYiI6Ik5XY3RVNmc5aW5PTlorK1EyVEo0IiwianRpIjoiYWNjdG9rXzAwMDBBMWpLcG9sR1ZXQ2FscXNmNnYiLCJ0eXAiOiJhdCIsInYiOiI2In0.RGWOVBJTEtmMFNNXhUP8O6thNzDOYAX7hnyMLiY0gY7QSgW2L9_LR0BCGuGmPnP3LRKm6joU94ZVU4sQzdmjSQ';
+var monzoAccessToken = '';
 // monzo account id
 var monzoAccountId = '';
 
