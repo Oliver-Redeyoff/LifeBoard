@@ -14,3 +14,4 @@ How to start project :
 - Build for production :
   - cd my-app
   - npm run build
+  - npm start
