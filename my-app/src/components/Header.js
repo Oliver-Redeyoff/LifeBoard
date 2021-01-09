@@ -4,18 +4,18 @@ import monzoLogo from '../assets/monzoLogo.png';
 export const Header = () => {
     return(
         <div className="header fade-in">
-            <img src={monzoLogo} alt="logo" style={{
+            {/* <img src={monzoLogo} alt="logo" style={{
                 display: 'inline-block',
                 height: '50px',
                 filter: 'contrast(0%) brightness(20%)'
-            }}></img>
+            }}></img> */}
             <h1 style={{
                 display: 'inline-block',
                 marginLeft: '10px',
                 verticalAlign: 'top',
                 opacity: '0.8',
                 fontWeight: '500'
-            }}>MonzoStats</h1>
+            }}>LifeBoard</h1>
         </div>
     )
 }

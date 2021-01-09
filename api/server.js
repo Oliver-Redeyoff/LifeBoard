@@ -9,7 +9,7 @@ global.Headers = fetch.Headers;
 
 // monzo auth data
 const clientId = 'oauth2client_0000A0KbBZa0KNVrXacVzG';
-const redirectUrl = 'http://192.168.1.98:3000';
+const redirectUrl = 'http://localhost:3000';
 const clientSecret = 'mnzconf.jz53zo9w6vTQ8b9yGkQys/YPNdVNK6BRiIpOec+8EbkX7dKOvzxfBJJ1VzYJX4FhFsGBJ2yDeo5F4NLPGmuO';
 
 // monzo access token, should be instantiated as empty 
@@ -119,6 +119,36 @@ app.get('/api/getMonzoBalance', async (req, res) => {
 
 })
 
+app.get('/api/getMonzoPots', async (req, res) => {
+
+  // check if account id has already been fetched
+  await getAccountId()
+
+  let url = "https://api.monzo.com/pots";
+
+  const myHeaders = new Headers();
+  console.log('getting pots');
+
+  myHeaders.append('Content-Type', 'application/json');
+  myHeaders.append('Authorization', 'Bearer ' + monzoAccessToken);
+
+  let requestRes = await new Promise((resolve, reject) => {
+    fetch(url + '?current_account_id=' + monzoAccountId, {
+      method: 'GET',
+      headers: myHeaders
+    })
+    .then(res => res.json())
+    .then(data => {resolve(data)})
+  });
+
+  console.log();
+  console.log('getMonzoPots result :');
+  console.log(requestRes);
+  console.log();
+
+  res.json(requestRes);
+
+})
 
 async function getAccountId() {
 

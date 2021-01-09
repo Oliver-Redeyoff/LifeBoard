@@ -32,7 +32,7 @@ class AccountBalance extends Component {
     if (!this.state.isLoading) {
       content = 
       <div class="widget-content">
-        <h1 class="balance-value" style={{marginTop: '25px', fontWeight: '600'}}>£ {this.state.balance}</h1>
+        <h1 class="balance-value" style={{marginTop: '25px', fontWeight: '600'}}><span style={{opacity: '0.8'}}>£</span> {this.state.balance}</h1>
       </div>
 
     } else {

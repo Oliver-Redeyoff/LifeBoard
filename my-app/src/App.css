@@ -67,6 +67,22 @@
   color: var(--white);
 }
 
+.auth-button {
+  position: absolute;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 15px;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  background-color: var(--dark);
+  filter: brightness(120%);
+  transition: all 0.2s;
+}
+.auth-button:hover {
+  filter: brightness(150%);
+}
+
 .number {
   color: red;
   font-size: 75px;
@@ -79,17 +95,34 @@
   margin: 50px;
 }
 
-.widget-list > .widget-container {
+.widget-list .widget-container {
   padding: 15px;
 }
 
 .widget {
   position: relative;
-  height: 150px;
-  width: 200px;
+  min-height: 150px;
+  min-width: 200px;
   padding: 10px;
   border-radius: 5px;
 }
+
+.sub-widget {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  padding: 0px 20px;
+  height: 100%;
+  border-right: 1px solid white;
+}
+.sub-widget:first-of-type {
+  padding-left: 10px;
+}
+.sub-widget:last-of-type {
+  border-width: 0;
+  padding-right: 10px;
+}
+
 .widget-label {
   font-size: 16px;
   font-weight: 600;

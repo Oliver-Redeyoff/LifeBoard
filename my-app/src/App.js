@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { Header } from './components/Header'
 import AccountBalance from './components/AccountBalance'
+import AccountPots from './components/AccountPots'
 import { authenticateMonzo } from './services/ApiService'
 
 class App extends Component {
@@ -72,12 +73,13 @@ class App extends Component {
         content = 
         <div className="widget-list">
           <AccountBalance></AccountBalance>
+          <AccountPots></AccountPots>
         </div>;
       } else {
-        content = <button onClick={this.redirectMonzo}>Authenticate with monzo</button>
+        content = <button className="auth-button" onClick={this.redirectMonzo}>🔐 Authenticate with monzo</button>
       }
     } else {
-      content = <div class="loader"></div>
+      content = <div className="loader"></div>
     }
 
     return (
